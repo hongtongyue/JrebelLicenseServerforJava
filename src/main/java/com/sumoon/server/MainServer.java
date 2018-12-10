@@ -1,7 +1,7 @@
-package com.vvvtimes.server;
+package com.sumoon.server;
 
-import com.vvvtimes.JrebelUtil.JrebelSign;
-import com.vvvtimes.util.rsasign;
+import com.sumoon.JrebelUtil.JrebelSign;
+import com.sumoon.util.rsasign;
 import net.sf.json.JSONObject;
 
 import java.io.IOException;
@@ -50,12 +50,13 @@ public class MainServer extends AbstractHandler {
         System.out.println("License Server started at http://localhost:" + port);
         System.out.println("JetBrains Activation address was: http://localhost:" + port + "/");
         System.out.println("JRebel 7.1 and earlier version Activation address was: http://localhost:" + port + "/{tokenname}, with any email.");
-        System.out.println("JRebel 2018.1 and later version Activation address was: http://localhost:" + port + "/{guid}(eg:http://localhost:" + port + "/"+ UUID.randomUUID().toString()+"), with any email.");
+        System.out.println("JRebel 2018.1 and later version Activation address was: http://localhost:" + port + "/{guid}(eg:http://localhost:" + port + "/" + UUID.randomUUID().toString() + "), with any email.");
 
         server.join();
     }
 
 
+    @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         System.out.println(target);
@@ -82,7 +83,7 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void jrebelValidateHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException  {
+    private void jrebelValidateHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
@@ -118,7 +119,7 @@ public class MainServer extends AbstractHandler {
                 "    \"statusMessage\": null\n" +
                 "}\n";
         JSONObject jsonObject = JSONObject.fromObject(jsonStr);
-        if (username != null ) {
+        if (username != null) {
             jsonObject.put("company", username);
         }
         String body = jsonObject.toString();
@@ -183,14 +184,14 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void releaseTicketHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException{
+    private void releaseTicketHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         String salt = request.getParameter("salt");
         baseRequest.setHandled(true);
-        if(salt==null){
+        if (salt == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<ReleaseTicketResponse><message></message><responseCode>OK</responseCode><salt>" + salt + "</salt></ReleaseTicketResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
@@ -198,22 +199,21 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void obtainTicketHandler ( String target , Request baseRequest , HttpServletRequest request ,
-                                       HttpServletResponse response ) throws IOException
-    {
+    private void obtainTicketHandler(String target, Request baseRequest, HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        SimpleDateFormat fm=new SimpleDateFormat("EEE,d MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
-        String date =fm.format(new Date())+" GMT";
+        SimpleDateFormat fm = new SimpleDateFormat("EEE,d MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
+        String date = fm.format(new Date()) + " GMT";
         //response.setHeader("Date", date);
         //response.setHeader("Server", "fasthttp");
         String salt = request.getParameter("salt");
         String username = request.getParameter("userName");
         String prolongationPeriod = "607875500";
         baseRequest.setHandled(true);
-        if(salt==null||username==null){
+        if (salt == null || username == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<ObtainTicketResponse><message></message><prolongationPeriod>" + prolongationPeriod + "</prolongationPeriod><responseCode>OK</responseCode><salt>" + salt + "</salt><ticketId>1</ticketId><ticketProperties>licensee=" + username + "\tlicenseType=0\t</ticketProperties></ObtainTicketResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
@@ -221,15 +221,14 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void pingHandler ( String target , Request baseRequest , HttpServletRequest request , HttpServletResponse response ) throws IOException
-    {
+    private void pingHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         String salt = request.getParameter("salt");
         baseRequest.setHandled(true);
-        if(salt==null){
+        if (salt == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<PingResponse><message></message><responseCode>OK</responseCode><salt>" + salt + "</salt></PingResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
@@ -248,7 +247,7 @@ public class MainServer extends AbstractHandler {
         html += "<p>License Server started at http://localhost:" + port;
         html += "<p>JetBrains Activation address was: <span style='color:red'>http://localhost:" + port + "/";
         html += "<p>JRebel 7.1 and earlier version Activation address was: <span style='color:red'>http://localhost:" + port + "/{tokenname}</span>, with any email.";
-        html += "<p>JRebel 2018.1 and later version Activation address was: http://localhost:" + port + "/{guid}(eg:<span style='color:red'>http://localhost:" + port + "/"+ UUID.randomUUID().toString()+"</span>), with any email.";
+        html += "<p>JRebel 2018.1 and later version Activation address was: http://localhost:" + port + "/{guid}(eg:<span style='color:red'>http://localhost:" + port + "/" + UUID.randomUUID().toString() + "</span>), with any email.";
 
         response.getWriter().println(html);
 
